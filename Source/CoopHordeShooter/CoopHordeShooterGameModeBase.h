@@ -13,8 +13,4 @@ UCLASS()
 class COOPHORDESHOOTER_API ACoopHordeShooterGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
-	
-	
-	
-	
 };
