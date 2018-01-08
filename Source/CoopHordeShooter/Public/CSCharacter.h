@@ -15,9 +15,9 @@ public:
 	// Sets default values for this character's properties
 	ACSCharacter();
 
+    // Keyboard moving WSAD
     void MoveForward(float Value);
     void MoveRight(float Value);
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

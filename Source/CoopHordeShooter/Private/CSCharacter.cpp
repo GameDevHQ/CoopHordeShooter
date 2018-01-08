@@ -21,6 +21,11 @@ void ACSCharacter::MoveRight(float Value)
     AddMovementInput(GetActorRightVector() * Value);
 }
 
+void ACSCharacter::LookUp(float Value)
+{
+
+}
+
 // Called when the game starts or when spawned
 void ACSCharacter::BeginPlay()
 {
@@ -38,7 +43,12 @@ void ACSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+    // Bind WSAD keys 
     PlayerInputComponent->BindAxis("MoveForward", this, &ACSCharacter::MoveForward);
     PlayerInputComponent->BindAxis("MoveRight", this, &ACSCharacter::MoveRight);
+
+    // Bind mouse for look up aroud
+    PlayerInputComponent->BindAxis("LookUp", this, &ACSCharacter::AddControllerPitchInput);
+    PlayerInputComponent->BindAxis("Turn", this, &ACSCharacter::AddControllerYawInput);
 }
 
