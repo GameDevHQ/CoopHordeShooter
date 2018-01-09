@@ -21,6 +21,7 @@ ACSCharacter::ACSCharacter()
     CameraComponent->SetupAttachment(SpringArmComponent);
 
     GetMovementComponent()->GetNavAgentPropertiesRef().bCanCrouch = true;
+    GetMovementComponent()->GetNavAgentPropertiesRef().bCanJump = true;
 }
 
 void ACSCharacter::MoveForward(float Value)
@@ -71,5 +72,8 @@ void ACSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
     // Crouch
     PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &ACSCharacter::BeginCrouch);
     PlayerInputComponent->BindAction("Crouch", IE_Released, this, &ACSCharacter::EndCrouch);
+
+    // Jump
+    PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 }
 
