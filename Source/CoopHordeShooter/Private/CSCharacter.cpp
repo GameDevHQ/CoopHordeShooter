@@ -3,6 +3,7 @@
 #include "CSCharacter.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "GameFramework/PawnMovementComponent.h"
 
 
 // Sets default values
@@ -18,6 +19,8 @@ ACSCharacter::ACSCharacter()
     // Set the default camera for a character
     CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
     CameraComponent->SetupAttachment(SpringArmComponent);
+
+    GetMovementComponent()->GetNavAgentPropertiesRef().bCanCrouch = true;
 }
 
 void ACSCharacter::MoveForward(float Value)
@@ -34,6 +37,16 @@ void ACSCharacter::MoveRight(float Value)
 void ACSCharacter::BeginPlay()
 {
     Super::BeginPlay();
+}
+
+void ACSCharacter::BeginCrounch()
+{
+    Crouch();
+}
+
+void ACSCharacter::EndCrouch()
+{
+    UnCrouch();
 }
 
 // Called every frame
@@ -54,5 +67,9 @@ void ACSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
     // Bind mouse for look up aroud
     PlayerInputComponent->BindAxis("LookUp", this, &ACSCharacter::AddControllerPitchInput);
     PlayerInputComponent->BindAxis("Turn", this, &ACSCharacter::AddControllerYawInput);
+
+    // Crouch and jump
+    PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &ACSCharacter::BeginCrounch);
+    PlayerInputComponent->BindAction("Crouch", IE_Released, this, &ACSCharacter::EndCrouch);
 }
 
