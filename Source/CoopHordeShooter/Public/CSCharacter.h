@@ -25,7 +25,7 @@ protected:
     // Called when the game starts or when spawned
     virtual void BeginPlay() override;
 
-    void BeginCrounch();
+    void BeginCrouch();
     void EndCrouch();
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")

@@ -39,7 +39,7 @@ void ACSCharacter::BeginPlay()
     Super::BeginPlay();
 }
 
-void ACSCharacter::BeginCrounch()
+void ACSCharacter::BeginCrouch()
 {
     Crouch();
 }
@@ -68,8 +68,8 @@ void ACSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
     PlayerInputComponent->BindAxis("LookUp", this, &ACSCharacter::AddControllerPitchInput);
     PlayerInputComponent->BindAxis("Turn", this, &ACSCharacter::AddControllerYawInput);
 
-    // Crouch and jump
-    PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &ACSCharacter::BeginCrounch);
+    // Crouch
+    PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &ACSCharacter::BeginCrouch);
     PlayerInputComponent->BindAction("Crouch", IE_Released, this, &ACSCharacter::EndCrouch);
 }
 
