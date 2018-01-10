@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/Pawn.h"
 #include "CSCharacter.generated.h"
 
 
@@ -37,4 +38,6 @@ public:
 
     // Called to bind functionality to input
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+    virtual FVector GetPawnViewLocation() const override;
 };
