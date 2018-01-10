@@ -1,5 +1,6 @@
 #include "CSWeapon.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 
 // Sets default values
@@ -29,7 +30,8 @@ void ACSWeapon::Fire()
         FRotator EyeRotation;
         Owner->GetActorEyesViewPoint(EyeLocation, EyeRotation);
 
-        FVector TraceEnd = EyeLocation + (EyeRotation.Vector() * 10000);
+        FVector ShotDirection = EyeRotation.Vector();
+        FVector TraceEnd = EyeLocation + (ShotDirection * 10000);
 
         FCollisionQueryParams QueryParams;
         QueryParams.AddIgnoredActor(Owner);
@@ -40,7 +42,8 @@ void ACSWeapon::Fire()
         // Blocking hit handler
         if (GetWorld()->LineTraceSingleByChannel(HitResult, EyeLocation, TraceEnd, ECC_Visibility, QueryParams))
         {
-            
+            AActor* HitActor = HitResult.GetActor();
+            UGameplayStatics::ApplyPointDamage(HitActor, 20.0f, ShotDirection, HitResult, Owner->GetInstigatorController(), this, DamageType);
         }
     }
 }
