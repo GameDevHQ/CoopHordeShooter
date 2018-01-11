@@ -1,12 +1,15 @@
 #include "CSWeapon.h"
 #include "DrawDebugHelpers.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Particles/ParticleSystem.h"
+#include "Particles/ParticleSystemComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 
 // Sets default values
 ACSWeapon::ACSWeapon():
-MuzzleSocketName("MuzzleSocket")
+MuzzleSocketName("MuzzleSocket"),
+TracerTargetName("BeamEnd")
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -35,6 +38,9 @@ void ACSWeapon::Fire()
         FVector ShotDirection = EyeRotation.Vector();
         FVector TraceEnd = EyeLocation + (ShotDirection * 10000);
 
+        // The particle "Target" parameter
+        FVector TracerEndPoint = TraceEnd;
+
         FCollisionQueryParams QueryParams;
         QueryParams.AddIgnoredActor(Owner);
         QueryParams.AddIgnoredActor(this);
@@ -51,6 +57,8 @@ void ACSWeapon::Fire()
             {
                 UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactEffect, HitResult.ImpactPoint, HitResult.ImpactNormal.Rotation());
             }
+
+            TracerEndPoint = HitResult.ImpactPoint;
         }
 
         DrawDebugLine(GetWorld(), EyeLocation, TraceEnd, FColor::White, false, 1.0f, 0, 1.0f);
@@ -58,6 +66,18 @@ void ACSWeapon::Fire()
         if (MuzzleEffect)
         {
             UGameplayStatics::SpawnEmitterAttached(MuzzleEffect, MeshComponent, MuzzleSocketName);
+        }
+
+        if (TracerEffect)
+        {
+            FVector MuzzleLocation = MeshComponent->GetSocketLocation(MuzzleSocketName);
+            UParticleSystemComponent* TracerComponent = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), TracerEffect, MuzzleLocation);
+
+
+            if (TracerComponent)
+            {
+                TracerComponent->SetVectorParameter(TracerTargetName, TracerEndPoint);
+            }
         }
     }
 }
