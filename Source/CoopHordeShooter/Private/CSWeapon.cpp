@@ -1,11 +1,12 @@
 #include "CSWeapon.h"
-#include "Components/SkeletalMeshComponent.h"
 #include "DrawDebugHelpers.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 
 // Sets default values
-ACSWeapon::ACSWeapon()
+ACSWeapon::ACSWeapon():
+MuzzleSocketName("MuzzleSocket")
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -45,7 +46,18 @@ void ACSWeapon::Fire()
         {
             AActor* HitActor = HitResult.GetActor();
             UGameplayStatics::ApplyPointDamage(HitActor, 20.0f, ShotDirection, HitResult, Owner->GetInstigatorController(), this, DamageType);
-            DrawDebugLine(GetWorld(), EyeLocation, TraceEnd, FColor::White, false, 1.0f, 0, 1.0f);
+
+            if (ImpactEffect)
+            {
+                UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactEffect, HitResult.ImpactPoint, HitResult.ImpactNormal.Rotation());
+            }
+        }
+
+        DrawDebugLine(GetWorld(), EyeLocation, TraceEnd, FColor::White, false, 1.0f, 0, 1.0f);
+        
+        if (MuzzleEffect)
+        {
+            UGameplayStatics::SpawnEmitterAttached(MuzzleEffect, MeshComponent, MuzzleSocketName);
         }
     }
 }

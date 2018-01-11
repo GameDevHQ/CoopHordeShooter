@@ -5,7 +5,7 @@
 #include "CSWeapon.generated.h"
 
 class USkeletalMeshComponent;
-
+class UParticleSystem;
 
 UCLASS()
 class COOPHORDESHOOTER_API ACSWeapon : public AActor
@@ -28,6 +28,15 @@ protected:
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
     TSubclassOf<UDamageType> DamageType;
+
+    UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
+    FName MuzzleSocketName;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
+    UParticleSystem* MuzzleEffect;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
+    UParticleSystem* ImpactEffect;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
