@@ -11,8 +11,8 @@ ACSWeapon::ACSWeapon():
 MuzzleSocketName("MuzzleSocket"),
 TracerTargetName("BeamEnd")
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+    // Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+    PrimaryActorTick.bCanEverTick = true;
 
     MeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MeshComponent"));
     RootComponent = MeshComponent;
@@ -21,8 +21,7 @@ TracerTargetName("BeamEnd")
 // Called when the game starts or when spawned
 void ACSWeapon::BeginPlay()
 {
-	Super::BeginPlay();
-	
+    Super::BeginPlay();
 }
 
 void ACSWeapon::Fire()
@@ -85,5 +84,5 @@ void ACSWeapon::Fire()
 // Called every frame
 void ACSWeapon::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
+    Super::Tick(DeltaTime);
 }

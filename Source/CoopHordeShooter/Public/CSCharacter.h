@@ -12,7 +12,7 @@ class USpringArmComponent;
 UCLASS()
 class COOPHORDESHOOTER_API ACSCharacter : public ACharacter
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 public:
     // Sets default values for this character's properties
     ACSCharacter();
