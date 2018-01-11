@@ -1,5 +1,6 @@
 #include "CSWeapon.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "DrawDebugHelpers.h"
 #include "Kismet/GameplayStatics.h"
 
 
@@ -44,6 +45,7 @@ void ACSWeapon::Fire()
         {
             AActor* HitActor = HitResult.GetActor();
             UGameplayStatics::ApplyPointDamage(HitActor, 20.0f, ShotDirection, HitResult, Owner->GetInstigatorController(), this, DamageType);
+            DrawDebugLine(GetWorld(), EyeLocation, TraceEnd, FColor::White, false, 1.0f, 0, 1.0f);
         }
     }
 }
