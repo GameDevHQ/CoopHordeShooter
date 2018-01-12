@@ -19,17 +19,8 @@ ACSWeapon::ACSWeapon():
 MuzzleSocketName("MuzzleSocket"),
 TracerTargetName("BeamEnd")
 {
-    // Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-    PrimaryActorTick.bCanEverTick = true;
-
     MeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MeshComponent"));
     RootComponent = MeshComponent;
-}
-
-// Called when the game starts or when spawned
-void ACSWeapon::BeginPlay()
-{
-    Super::BeginPlay();
 }
 
 void ACSWeapon::Fire()
@@ -73,27 +64,25 @@ void ACSWeapon::Fire()
             DrawDebugLine(GetWorld(), EyeLocation, TraceEnd, FColor::White, false, 1.0f, 0, 1.0f);
         }
 
-        if (MuzzleEffect)
-        {
-            UGameplayStatics::SpawnEmitterAttached(MuzzleEffect, MeshComponent, MuzzleSocketName);
-        }
-
-        if (TracerEffect)
-        {
-            FVector MuzzleLocation = MeshComponent->GetSocketLocation(MuzzleSocketName);
-            UParticleSystemComponent* TracerComponent = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), TracerEffect, MuzzleLocation);
-
-
-            if (TracerComponent)
-            {
-                TracerComponent->SetVectorParameter(TracerTargetName, TracerEndPoint);
-            }
-        }
+        PlayFireEffects(TracerEndPoint);
     }
 }
 
-// Called every frame
-void ACSWeapon::Tick(float DeltaTime)
+void ACSWeapon::PlayFireEffects(FVector TracerEndPoint)
 {
-    Super::Tick(DeltaTime);
+    if (MuzzleEffect)
+    {
+        UGameplayStatics::SpawnEmitterAttached(MuzzleEffect, MeshComponent, MuzzleSocketName);
+    }
+
+    if (TracerEffect)
+    {
+        FVector MuzzleLocation = MeshComponent->GetSocketLocation(MuzzleSocketName);
+        UParticleSystemComponent* TracerComponent = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), TracerEffect, MuzzleLocation);
+
+        if (TracerComponent)
+        {
+            TracerComponent->SetVectorParameter(TracerTargetName, TracerEndPoint);
+        }
+    }
 }

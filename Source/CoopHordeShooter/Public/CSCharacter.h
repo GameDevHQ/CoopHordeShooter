@@ -6,6 +6,7 @@
 #include "CSCharacter.generated.h"
 
 
+class ACSWeapon;
 class UCameraComponent;
 class USpringArmComponent;
 
@@ -16,22 +17,29 @@ class COOPHORDESHOOTER_API ACSCharacter : public ACharacter
 public:
     // Sets default values for this character's properties
     ACSCharacter();
+protected:
+    float DefaultFOV;
+    bool bWantsToZoom;
+
+    ACSWeapon* CurrentWeapon;
+
+    // Called when the game starts or when spawned
+    virtual void BeginPlay() override;
 
     // Keyboard moving WSAD
     void MoveForward(float Value);
     void MoveRight(float Value);
-
-    float DefaultFOV;
-    bool bWantsToZoom;
-protected:
-    // Called when the game starts or when spawned
-    virtual void BeginPlay() override;
 
     void BeginCrouch();
     void EndCrouch();
 
     void BeginZoom();
     void EndZoom();
+
+    void StartFire();
+    void EndFire();
+
+    void Fire();
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
     UCameraComponent* CameraComponent;
@@ -44,6 +52,12 @@ protected:
 
     UPROPERTY(EditDefaultsOnly, Category = "Player", meta = (ClampMin = 0.1, ClampMax = 100))
     float ZoomInterpolateSpeed;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Player")
+    TSubclassOf<ACSWeapon> DefaultWeaponClass;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Player")
+    FName WeaponAttackSocketName;
 public:	
     // Called every frame
     virtual void Tick(float DeltaTime) override;

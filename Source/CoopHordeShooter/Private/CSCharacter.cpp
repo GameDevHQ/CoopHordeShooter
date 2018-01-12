@@ -2,13 +2,15 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
+#include "CSWeapon.h"
 
 
 // Sets default values
 ACSCharacter::ACSCharacter():
 DefaultFOV(90.0f),
 ZoomedFOV(65.0f),
-ZoomInterpolateSpeed(20.0f)
+ZoomInterpolateSpeed(20.0f),
+WeaponAttackSocketName("WeaponSocket")
 {
     // Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
     PrimaryActorTick.bCanEverTick = true;
@@ -40,6 +42,17 @@ void ACSCharacter::BeginPlay()
 {
     Super::BeginPlay();
     DefaultFOV = CameraComponent->FieldOfView;
+
+    // Spawn a default weapon
+    FActorSpawnParameters SpawnParameters;
+    SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+    CurrentWeapon = GetWorld()->SpawnActor<ACSWeapon>(DefaultWeaponClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParameters);
+
+    if (CurrentWeapon)
+    {
+        CurrentWeapon->SetOwner(this);
+        CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponAttackSocketName);
+    }
 }
 
 void ACSCharacter::BeginCrouch()
@@ -60,6 +73,22 @@ void ACSCharacter::BeginZoom()
 void ACSCharacter::EndZoom()
 {
     bWantsToZoom = false;
+}
+
+void ACSCharacter::StartFire()
+{
+}
+
+void ACSCharacter::EndFire()
+{
+}
+
+void ACSCharacter::Fire()
+{
+    if (CurrentWeapon)
+    {
+        CurrentWeapon->Fire();
+    }
 }
 
 // Called every frame
@@ -95,6 +124,9 @@ void ACSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
     // Zoom In
     PlayerInputComponent->BindAction("Zoom", IE_Pressed, this, &ACSCharacter::BeginZoom);
     PlayerInputComponent->BindAction("Zoom", IE_Released, this, &ACSCharacter::EndZoom);
+
+    // Fire
+    PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ACSCharacter::Fire);
 }
 
 FVector ACSCharacter::GetPawnViewLocation() const
