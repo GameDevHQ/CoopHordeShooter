@@ -20,6 +20,9 @@ public:
     // Keyboard moving WSAD
     void MoveForward(float Value);
     void MoveRight(float Value);
+
+    float DefaultFOV;
+    bool bWantsToZoom;
 protected:
     // Called when the game starts or when spawned
     virtual void BeginPlay() override;
@@ -27,11 +30,20 @@ protected:
     void BeginCrouch();
     void EndCrouch();
 
+    void BeginZoom();
+    void EndZoom();
+
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
     UCameraComponent* CameraComponent;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
     USpringArmComponent* SpringArmComponent;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Player")
+    float ZoomedFOV;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Player", meta = (ClampMin = 0.1, ClampMax = 100))
+    float ZoomInterpolateSpeed;
 public:	
     // Called every frame
     virtual void Tick(float DeltaTime) override;

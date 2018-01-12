@@ -5,7 +5,10 @@
 
 
 // Sets default values
-ACSCharacter::ACSCharacter()
+ACSCharacter::ACSCharacter():
+DefaultFOV(90.0f),
+ZoomedFOV(65.0f),
+ZoomInterpolateSpeed(20.0f)
 {
     // Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
     PrimaryActorTick.bCanEverTick = true;
@@ -36,6 +39,7 @@ void ACSCharacter::MoveRight(float Value)
 void ACSCharacter::BeginPlay()
 {
     Super::BeginPlay();
+    DefaultFOV = CameraComponent->FieldOfView;
 }
 
 void ACSCharacter::BeginCrouch()
@@ -48,10 +52,24 @@ void ACSCharacter::EndCrouch()
     UnCrouch();
 }
 
+void ACSCharacter::BeginZoom()
+{
+    bWantsToZoom = true;
+}
+
+void ACSCharacter::EndZoom()
+{
+    bWantsToZoom = false;
+}
+
 // Called every frame
 void ACSCharacter::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
+
+    float TargetFOV = bWantsToZoom ? ZoomedFOV : DefaultFOV;
+    float NewFOV = FMath::FInterpTo(CameraComponent->FieldOfView, TargetFOV, DeltaTime, ZoomInterpolateSpeed);
+    CameraComponent->SetFieldOfView(NewFOV);
 }
 
 // Called to bind functionality to input
@@ -73,6 +91,10 @@ void ACSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
     // Jump
     PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+
+    // Zoom In
+    PlayerInputComponent->BindAction("Zoom", IE_Pressed, this, &ACSCharacter::BeginZoom);
+    PlayerInputComponent->BindAction("Zoom", IE_Released, this, &ACSCharacter::EndZoom);
 }
 
 FVector ACSCharacter::GetPawnViewLocation() const

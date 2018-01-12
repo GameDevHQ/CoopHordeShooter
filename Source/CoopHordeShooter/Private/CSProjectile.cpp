@@ -8,10 +8,10 @@
 
 ACSProjectile::ACSProjectile():
 Damage(25.0f),
-DamageRadius(200.f)
+DamageRadius(200.0f)
 {
     // The default grenade launcher mesh
- 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
+    MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
     MeshComponent->SetSimulatePhysics(true);
     MeshComponent->SetCollisionProfileName("Projectile");
     MeshComponent->SetWalkableSlopeOverride(FWalkableSlopeOverride(WalkableSlope_Unwalkable, 0.f));
