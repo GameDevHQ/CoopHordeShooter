@@ -85,4 +85,15 @@ void ACSWeapon::PlayFireEffects(FVector TracerEndPoint)
             TracerComponent->SetVectorParameter(TracerTargetName, TracerEndPoint);
         }
     }
+
+    APawn* Owner = Cast<APawn>(GetOwner());
+    if (Owner)
+    {
+        APlayerController* PlayerController = Cast<APlayerController>(Owner->GetController());
+        if (PlayerController)
+        {
+            PlayerController->ClientPlayCameraShake(FireCameraShake);
+        }
+    }
+
 }

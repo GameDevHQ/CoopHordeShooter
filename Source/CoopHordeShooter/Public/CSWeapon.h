@@ -6,6 +6,7 @@
 
 class USkeletalMeshComponent;
 class UParticleSystem;
+class UCameraShake;
 
 UCLASS()
 class COOPHORDESHOOTER_API ACSWeapon : public AActor
@@ -39,6 +40,9 @@ protected:
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
     UParticleSystem* TracerEffect;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+    TSubclassOf<UCameraShake> FireCameraShake;
 public:
     UFUNCTION(BlueprintCallable, Category = "Weapon")
     virtual void Fire();
