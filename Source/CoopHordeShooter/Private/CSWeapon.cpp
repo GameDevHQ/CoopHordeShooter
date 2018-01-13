@@ -19,7 +19,9 @@ FAutoConsoleVariableRef CVARDebugWeaponDrawing (
 // Sets default values
 ACSWeapon::ACSWeapon():
 MuzzleSocketName("MuzzleSocket"),
-TracerTargetName("BeamEnd")
+TracerTargetName("BeamEnd"),
+BaseDamage(20.0f),
+CriticalHitDamageMultiplier(2.50f)
 {
     MeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MeshComponent"));
     RootComponent = MeshComponent;
@@ -52,9 +54,16 @@ void ACSWeapon::Fire()
         if (GetWorld()->LineTraceSingleByChannel(HitResult, EyeLocation, TraceEnd, COLLISION_WEAPON, QueryParams))
         {
             AActor* HitActor = HitResult.GetActor();
-            UGameplayStatics::ApplyPointDamage(HitActor, 20.0f, ShotDirection, HitResult, Owner->GetInstigatorController(), this, DamageType);
-
             EPhysicalSurface SurfaceType = UPhysicalMaterial::DetermineSurfaceType(HitResult.PhysMaterial.Get());
+
+            float ActualDamage = BaseDamage;
+            if (SurfaceType == SURFACE_FLESHVULNERABLE)
+            {
+                ActualDamage *= CriticalHitDamageMultiplier;
+            }
+
+            UGameplayStatics::ApplyPointDamage(HitActor, ActualDamage, ShotDirection, HitResult, Owner->GetInstigatorController(), this, DamageType);
+
             UParticleSystem* SelectedEffect = nullptr;
             switch (SurfaceType)
             {
