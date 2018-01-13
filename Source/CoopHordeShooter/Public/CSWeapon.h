@@ -63,9 +63,16 @@ protected:
     UPROPERTY(EditDefaultsOnly, Category = "Weapon", meta = (ClampMin = 1, ClampMax = 1000))
     float FireRate;
 
+    UPROPERTY(EditDefaultsOnly, Category = "Weapon", meta = (ClampMin = 1, ClampMax = 1000))
+    float ScatterOfBulletsMultiplier;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Weapon", meta = (ClampMin = 0))
+    float SpreadAmount;
+
     FTimerHandle TimerHandle_TimeBetweenShots;
     float LastFiredTime;
     float TimeBetweenShots;
+    float ActualScatterOfBulletsMultiplier;
 public:
     virtual void Fire();
     void StartFire();

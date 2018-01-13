@@ -6,6 +6,7 @@
 #include "Particles/ParticleSystemComponent.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "Kismet/GameplayStatics.h"
+
 #include "CoopHordeShooter.h"
 
 
@@ -26,7 +27,10 @@ BaseDamage(20.0f),
 CriticalHitDamageMultiplier(2.50f),
 FireRate(450.0f),
 LastFiredTime(0.0f),
-TimeBetweenShots(0.0f)
+TimeBetweenShots(0.0f),
+ScatterOfBulletsMultiplier(100.0f),
+ActualScatterOfBulletsMultiplier(0.0f),
+SpreadAmount(1000.0f)
 {
     MeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MeshComponent"));
     RootComponent = MeshComponent;
@@ -44,6 +48,13 @@ void ACSWeapon::Fire()
 
         FVector ShotDirection = EyeRotation.Vector();
         FVector TraceEnd = EyeLocation + (ShotDirection * 10000);
+        
+        // Apply some randomness for a shooting weapon
+        float RandomX = FMath::FRandRange(-SpreadAmount, SpreadAmount);
+        float RandomY = FMath::FRandRange(-SpreadAmount, SpreadAmount);
+        float RandomZ = FMath::FRandRange(-SpreadAmount, SpreadAmount);
+        FRotator RandomAimRot = EyeRotation + FRotator(RandomX, RandomY, RandomZ);
+        TraceEnd += RandomAimRot.Vector() * ActualScatterOfBulletsMultiplier;
 
         // The particle "Target" parameter
         FVector TracerEndPoint = TraceEnd;
@@ -108,12 +119,14 @@ void ACSWeapon::Fire()
 void ACSWeapon::StartFire()
 {
     float FirstDelay = FMath::Max(LastFiredTime + TimeBetweenShots - GetWorld()->TimeSeconds, 0.0f);
+    ActualScatterOfBulletsMultiplier = FMath::Lerp(FirstDelay, ScatterOfBulletsMultiplier, 1.f);
     GetWorldTimerManager().SetTimer(TimerHandle_TimeBetweenShots, this, &ACSWeapon::Fire, TimeBetweenShots, true, FirstDelay);
 }
 
 void ACSWeapon::StopFire()
 {
     GetWorldTimerManager().ClearTimer(TimerHandle_TimeBetweenShots);
+    ActualScatterOfBulletsMultiplier = 0.0f;
 }
 
 void ACSWeapon::BeginPlay()
