@@ -1,12 +1,12 @@
 #include "CSWeapon.h"
 #include "DrawDebugHelpers.h"
+#include "TimerManager.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Particles/ParticleSystem.h"
 #include "Particles/ParticleSystemComponent.h"
-#include "Kismet/GameplayStatics.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
+#include "Kismet/GameplayStatics.h"
 #include "CoopHordeShooter.h"
-#include "TimerManager.h"
 
 
 static int32 DebugWeaponDrawing = 0;
@@ -93,6 +93,11 @@ void ACSWeapon::Fire()
         if (DebugWeaponDrawing > 0)
         {
             DrawDebugLine(GetWorld(), EyeLocation, TraceEnd, FColor::White, false, 1.0f, 0, 1.0f);
+        }
+
+        if (ShootWeaponSound)
+        {
+            UGameplayStatics::PlaySoundAtLocation(this, ShootWeaponSound, GetActorLocation());
         }
 
         PlayFireEffects(TracerEndPoint);

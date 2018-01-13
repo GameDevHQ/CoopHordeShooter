@@ -4,9 +4,11 @@
 #include "GameFramework/Actor.h"
 #include "CSWeapon.generated.h"
 
+
 class USkeletalMeshComponent;
 class UParticleSystem;
 class UCameraShake;
+class USoundBase;
 
 UCLASS()
 class COOPHORDESHOOTER_API ACSWeapon : public AActor
@@ -33,6 +35,9 @@ protected:
 
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
     FName TracerTargetName;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
+    USoundBase* ShootWeaponSound;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
     UParticleSystem* MuzzleEffect;
