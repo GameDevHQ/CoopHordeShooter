@@ -77,19 +77,20 @@ void ACSCharacter::EndZoom()
 
 void ACSCharacter::StartFire()
 {
+    if (CurrentWeapon)
+    {
+        CurrentWeapon->StartFire();
+    }
 }
 
-void ACSCharacter::EndFire()
-{
-}
-
-void ACSCharacter::Fire()
+void ACSCharacter::StopFire()
 {
     if (CurrentWeapon)
     {
-        CurrentWeapon->Fire();
+        CurrentWeapon->StopFire();
     }
 }
+
 
 // Called every frame
 void ACSCharacter::Tick(float DeltaTime)
@@ -126,7 +127,8 @@ void ACSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
     PlayerInputComponent->BindAction("Zoom", IE_Released, this, &ACSCharacter::EndZoom);
 
     // Fire
-    PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ACSCharacter::Fire);
+    PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ACSCharacter::StartFire);
+    PlayerInputComponent->BindAction("Fire", IE_Released, this, &ACSCharacter::StopFire);
 }
 
 FVector ACSCharacter::GetPawnViewLocation() const

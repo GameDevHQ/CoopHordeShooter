@@ -6,6 +6,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "CoopHordeShooter.h"
+#include "TimerManager.h"
+
 
 static int32 DebugWeaponDrawing = 0;
 FAutoConsoleVariableRef CVARDebugWeaponDrawing (
@@ -21,7 +23,10 @@ ACSWeapon::ACSWeapon():
 MuzzleSocketName("MuzzleSocket"),
 TracerTargetName("BeamEnd"),
 BaseDamage(20.0f),
-CriticalHitDamageMultiplier(2.50f)
+CriticalHitDamageMultiplier(2.50f),
+FireRate(450.0f),
+LastFiredTime(0.0f),
+TimeBetweenShots(0.0f)
 {
     MeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MeshComponent"));
     RootComponent = MeshComponent;
@@ -91,7 +96,25 @@ void ACSWeapon::Fire()
         }
 
         PlayFireEffects(TracerEndPoint);
+        LastFiredTime = GetWorld()->TimeSeconds;
     }
+}
+
+void ACSWeapon::StartFire()
+{
+    float FirstDelay = FMath::Max(LastFiredTime + TimeBetweenShots - GetWorld()->TimeSeconds, 0.0f);
+    GetWorldTimerManager().SetTimer(TimerHandle_TimeBetweenShots, this, &ACSWeapon::Fire, TimeBetweenShots, true, FirstDelay);
+}
+
+void ACSWeapon::StopFire()
+{
+    GetWorldTimerManager().ClearTimer(TimerHandle_TimeBetweenShots);
+}
+
+void ACSWeapon::BeginPlay()
+{
+    Super::BeginPlay();
+    TimeBetweenShots = 60 / FireRate;
 }
 
 void ACSWeapon::PlayFireEffects(FVector TracerEndPoint)

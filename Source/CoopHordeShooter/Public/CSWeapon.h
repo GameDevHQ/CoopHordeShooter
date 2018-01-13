@@ -18,6 +18,8 @@ public:
     ACSWeapon();
 
 protected:
+    virtual void BeginPlay() override;
+
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
     USkeletalMeshComponent* MeshComponent;
 
@@ -52,7 +54,15 @@ protected:
 
     UPROPERTY(EditDefaultsOnly, Category = "Weapon")
     float CriticalHitDamageMultiplier;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Weapon", meta = (ClampMin = 1, ClampMax = 1000))
+    float FireRate;
+
+    FTimerHandle TimerHandle_TimeBetweenShots;
+    float LastFiredTime;
+    float TimeBetweenShots;
 public:
-    UFUNCTION(BlueprintCallable, Category = "Weapon")
     virtual void Fire();
+    void StartFire();
+    void StopFire();
 };
