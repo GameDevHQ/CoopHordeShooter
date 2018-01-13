@@ -49,7 +49,7 @@ void ACSWeapon::Fire()
 
         FHitResult HitResult;
         // Blocking hit handler
-        if (GetWorld()->LineTraceSingleByChannel(HitResult, EyeLocation, TraceEnd, ECC_Visibility, QueryParams))
+        if (GetWorld()->LineTraceSingleByChannel(HitResult, EyeLocation, TraceEnd, COLLISION_WEAPON, QueryParams))
         {
             AActor* HitActor = HitResult.GetActor();
             UGameplayStatics::ApplyPointDamage(HitActor, 20.0f, ShotDirection, HitResult, Owner->GetInstigatorController(), this, DamageType);
