@@ -4,6 +4,8 @@
 #include "Particles/ParticleSystem.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "PhysicalMaterials/PhysicalMaterial.h"
+#include "CoopHordeShooter.h"
 
 static int32 DebugWeaponDrawing = 0;
 FAutoConsoleVariableRef CVARDebugWeaponDrawing (
@@ -43,6 +45,7 @@ void ACSWeapon::Fire()
         QueryParams.AddIgnoredActor(Owner);
         QueryParams.AddIgnoredActor(this);
         QueryParams.bTraceComplex = true;
+        QueryParams.bReturnPhysicalMaterial = true;
 
         FHitResult HitResult;
         // Blocking hit handler
@@ -51,9 +54,23 @@ void ACSWeapon::Fire()
             AActor* HitActor = HitResult.GetActor();
             UGameplayStatics::ApplyPointDamage(HitActor, 20.0f, ShotDirection, HitResult, Owner->GetInstigatorController(), this, DamageType);
 
-            if (ImpactEffect)
+            EPhysicalSurface SurfaceType = UPhysicalMaterial::DetermineSurfaceType(HitResult.PhysMaterial.Get());
+            UParticleSystem* SelectedEffect = nullptr;
+            switch (SurfaceType)
             {
-                UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactEffect, HitResult.ImpactPoint, HitResult.ImpactNormal.Rotation());
+                // Flesh default & Flesh vulnerable
+                case SURFACE_FLESHDEFAULT:
+                case SURFACE_FLESHVULNERABLE:
+                    SelectedEffect = FleshImpactEffect;
+                    break;
+                default:
+                    SelectedEffect = DefaultImpactEffect;
+                    break;
+            }
+
+            if (SelectedEffect)
+            {
+                UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SelectedEffect, HitResult.ImpactPoint, HitResult.ImpactNormal.Rotation());
             }
 
             TracerEndPoint = HitResult.ImpactPoint;
