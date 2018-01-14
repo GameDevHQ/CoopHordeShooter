@@ -9,6 +9,7 @@
 class ACSWeapon;
 class UCameraComponent;
 class USpringArmComponent;
+class UCSHealthComponent;
 
 UCLASS()
 class COOPHORDESHOOTER_API ACSCharacter : public ACharacter
@@ -45,6 +46,9 @@ protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
     USpringArmComponent* SpringArmComponent;
 
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+    UCSHealthComponent* HealthComponent;
+
     UPROPERTY(EditDefaultsOnly, Category = "Player")
     float ZoomedFOV;
 
@@ -56,6 +60,14 @@ protected:
 
     UPROPERTY(EditDefaultsOnly, Category = "Player")
     FName WeaponAttackSocketName;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Player")
+    bool bDied;
+
+    UFUNCTION()
+    void OnHealthChanged(UCSHealthComponent* HealthComp, float Health,
+                        float HealthDelta, const class UDamageType* DamageType, 
+                        class AController* InstigatedBy, AActor* DamageCauser);
 public:	
     // Called every frame
     virtual void Tick(float DeltaTime) override;
