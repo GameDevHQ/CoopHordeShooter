@@ -1,8 +1,10 @@
 #include "CSCharacter.h"
 #include "Camera/CameraComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "CSWeapon.h"
+#include "CoopHordeShooter.h"
 
 
 // Sets default values
@@ -22,6 +24,8 @@ WeaponAttackSocketName("WeaponSocket")
     // Set the default camera for a character
     CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
     CameraComponent->SetupAttachment(SpringArmComponent);
+
+    GetCapsuleComponent()->SetCollisionResponseToChannel(COLLISION_WEAPON, ECR_Ignore);
 
     GetMovementComponent()->GetNavAgentPropertiesRef().bCanCrouch = true;
     GetMovementComponent()->GetNavAgentPropertiesRef().bCanJump = true;
