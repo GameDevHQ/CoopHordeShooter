@@ -73,6 +73,9 @@ protected:
     float LastFiredTime;
     float TimeBetweenShots;
     float ActualScatterOfBulletsMultiplier;
+
+    UFUNCTION(Server, Reliable, WithValidation)
+    void ServerFire();
 public:
     virtual void Fire();
     void StartFire();

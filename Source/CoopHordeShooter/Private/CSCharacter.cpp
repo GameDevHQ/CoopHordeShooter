@@ -3,6 +3,7 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
+#include "Net/UnrealNetwork.h"
 #include "CSWeapon.h"
 #include "Components/CSHealthComponent.h"
 #include "CoopHordeShooter.h"
@@ -48,20 +49,23 @@ void ACSCharacter::MoveRight(float Value)
 void ACSCharacter::BeginPlay()
 {
     Super::BeginPlay();
+    
     DefaultFOV = CameraComponent->FieldOfView;
-
-    // Spawn a default weapon
-    FActorSpawnParameters SpawnParameters;
-    SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-    CurrentWeapon = GetWorld()->SpawnActor<ACSWeapon>(DefaultWeaponClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParameters);
-
-    if (CurrentWeapon)
-    {
-        CurrentWeapon->SetOwner(this);
-        CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponAttackSocketName);
-    }
-
     HealthComponent->OnHealthChanged.AddDynamic(this, &ACSCharacter::OnHealthChanged);
+
+    if (Role  == ROLE_Authority)
+    {
+        // Spawn a default weapon
+        FActorSpawnParameters SpawnParameters;
+        SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+        CurrentWeapon = GetWorld()->SpawnActor<ACSWeapon>(DefaultWeaponClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParameters);
+
+        if (CurrentWeapon)
+        {
+            CurrentWeapon->SetOwner(this);
+            CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponAttackSocketName);
+        }
+    }
 }
 
 void ACSCharacter::BeginCrouch()
@@ -168,3 +172,9 @@ FVector ACSCharacter::GetPawnViewLocation() const
     return Super::GetPawnViewLocation();
 }
 
+void ACSCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+    DOREPLIFETIME(ACSCharacter, CurrentWeapon);
+}

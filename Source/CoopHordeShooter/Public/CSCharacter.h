@@ -22,6 +22,7 @@ protected:
     float DefaultFOV;
     bool bWantsToZoom;
 
+    UPROPERTY(Replicated)
     ACSWeapon* CurrentWeapon;
 
     // Called when the game starts or when spawned

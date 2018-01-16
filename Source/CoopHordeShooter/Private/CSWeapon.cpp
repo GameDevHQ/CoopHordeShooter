@@ -6,7 +6,6 @@
 #include "Particles/ParticleSystemComponent.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "Kismet/GameplayStatics.h"
-
 #include "CoopHordeShooter.h"
 
 
@@ -34,10 +33,27 @@ SpreadAmount(1000.0f)
 {
     MeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MeshComponent"));
     RootComponent = MeshComponent;
+
+    SetReplicates(true);
+}
+
+void ACSWeapon::ServerFire_Implementation()
+{
+    Fire();
+}
+
+bool ACSWeapon::ServerFire_Validate()
+{
+    return true;
 }
 
 void ACSWeapon::Fire()
 {
+    if (Role < ROLE_Authority)
+    {
+        ServerFire();
+    }
+
     // Trace the world from the pawn eyes to crosshair location
     AActor* Owner = GetOwner();
     if (Owner)
