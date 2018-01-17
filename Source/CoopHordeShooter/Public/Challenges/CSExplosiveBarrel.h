@@ -21,7 +21,11 @@ public:
     // Sets default values for this actor's properties
     ACSExplosiveBarrel();
 protected:
+    UPROPERTY(ReplicatedUsing=OnRep_Exploded)
     bool bIsExploded;
+
+    UFUNCTION()
+    void OnRep_Exploded();
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
     UStaticMeshComponent* MeshComponent;
@@ -45,4 +49,6 @@ protected:
     void OnHealthChanged(UCSHealthComponent* HealthComp, float Health,
                         float HealthDelta, const class UDamageType* DamageType,
                         class AController* InstigatedBy, AActor* DamageCauser);
+
+    void PlayExplosionEffects();
 };

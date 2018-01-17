@@ -2,6 +2,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "PhysicsEngine/RadialForceComponent.h"
+#include "Net/UnrealNetwork.h"
 #include "CSHealthComponent.h"
 
 
@@ -22,6 +23,15 @@ ExplosionForce(100.0f)
     RadialForceComponent->bImpulseVelChange = true;
     RadialForceComponent->bAutoActivate = true;
     RadialForceComponent->SetupAttachment(RootComponent);
+
+    SetReplicates(true);
+    SetReplicateMovement(true);
+    MinNetUpdateFrequency = 20.0f;
+}
+
+void ACSExplosiveBarrel::OnRep_Exploded()
+{
+    PlayExplosionEffects();
 }
 
 void ACSExplosiveBarrel::OnHealthChanged(UCSHealthComponent* HealthComp, float Health,
@@ -38,13 +48,26 @@ void ACSExplosiveBarrel::OnHealthChanged(UCSHealthComponent* HealthComp, float H
         bIsExploded = true;
 
         // Push an object up
-        FVector ImpulseDirection = FVector::UpVector * ExplosionForce;
-        MeshComponent->AddImpulse(ImpulseDirection, NAME_None, true);
+        FVector BoostIntensity = FVector::UpVector * ExplosionForce;
+        MeshComponent->AddImpulse(BoostIntensity, NAME_None, true);
 
-        // Play a visual effect and change the object material to an another one
-        UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionEffect, GetActorLocation());
-        MeshComponent->SetMaterial(0, ExplodedMaterial);
+        OnRep_Exploded();
 
+        // Blast away nearby physics actors
         RadialForceComponent->FireImpulse();
     }
+}
+
+void ACSExplosiveBarrel::PlayExplosionEffects()
+{
+    // Play a visual effect and change the object material to an another one
+    UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionEffect, GetActorLocation());
+    MeshComponent->SetMaterial(0, ExplodedMaterial);
+}
+
+void ACSExplosiveBarrel::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+    DOREPLIFETIME(ACSExplosiveBarrel, bIsExploded);
 }
