@@ -10,6 +10,20 @@ class UParticleSystem;
 class UCameraShake;
 class USoundBase;
 
+
+// Contains an information of a single hitscan weapon
+USTRUCT()
+struct FHitScanTrace
+{
+    GENERATED_BODY()
+public:
+    UPROPERTY()
+    FVector_NetQuantize TraceFrom;
+    
+    UPROPERTY()
+    FVector_NetQuantize TraceTo;
+};
+
 UCLASS()
 class COOPHORDESHOOTER_API ACSWeapon : public AActor
 {
@@ -76,6 +90,12 @@ protected:
 
     UFUNCTION(Server, Reliable, WithValidation)
     void ServerFire();
+
+    UPROPERTY(ReplicatedUsing=OnRep_HitScanTrace)
+    FHitScanTrace HitScanTrace;
+
+    UFUNCTION()
+    void OnRep_HitScanTrace();
 public:
     virtual void Fire();
     void StartFire();

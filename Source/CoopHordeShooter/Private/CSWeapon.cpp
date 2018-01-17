@@ -6,6 +6,7 @@
 #include "Particles/ParticleSystemComponent.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 #include "CoopHordeShooter.h"
 
 
@@ -45,6 +46,11 @@ void ACSWeapon::ServerFire_Implementation()
 bool ACSWeapon::ServerFire_Validate()
 {
     return true;
+}
+
+void ACSWeapon::OnRep_HitScanTrace()
+{
+    PlayFireEffects(HitScanTrace.TraceTo);
 }
 
 void ACSWeapon::Fire()
@@ -126,7 +132,14 @@ void ACSWeapon::Fire()
         {
             UGameplayStatics::PlaySoundAtLocation(this, ShootWeaponSound, GetActorLocation());
         }
+        
 
+        if (Role == ROLE_Authority)
+        {
+            //HitScanTrace.TraceFrom = 
+            HitScanTrace.TraceTo = TracerEndPoint;
+        }
+        
         PlayFireEffects(TracerEndPoint);
         LastFiredTime = GetWorld()->TimeSeconds;
     }
@@ -179,4 +192,11 @@ void ACSWeapon::PlayFireEffects(FVector TracerEndPoint)
         }
     }
 
+}
+
+void ACSWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+    DOREPLIFETIME_CONDITION(ACSWeapon, HitScanTrace, COND_SkipOwner);
 }
