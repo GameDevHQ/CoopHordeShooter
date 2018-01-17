@@ -62,7 +62,7 @@ protected:
     UPROPERTY(EditDefaultsOnly, Category = "Player")
     FName WeaponAttackSocketName;
 
-    UPROPERTY(BlueprintReadOnly, Category = "Player")
+    UPROPERTY(Replicated, BlueprintReadOnly, Category = "Player")
     bool bDied;
 
     UFUNCTION()

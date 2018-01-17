@@ -177,4 +177,5 @@ void ACSCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
     DOREPLIFETIME(ACSCharacter, CurrentWeapon);
+    DOREPLIFETIME(ACSCharacter, bDied);
 }

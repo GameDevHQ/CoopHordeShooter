@@ -20,14 +20,15 @@ protected:
     // Called when the game starts
     virtual void BeginPlay() override;
 
-    UPROPERTY(BlueprintReadOnly, Category = "HealthComponent")
+    UPROPERTY(Replicated, BlueprintReadOnly, Category = "HealthComponent")
     float Health;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HealthComponent")
     float DefaultHealth;
 
     UFUNCTION()
-    void HandleTakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
+    void HandleTakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, 
+                             AController* InstigatedBy, AActor* DamageCauser);
 public:
     UPROPERTY(BlueprintAssignable, Category = "Events")
     FOnHealthChangedSignature OnHealthChanged;
