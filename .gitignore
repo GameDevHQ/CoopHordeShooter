@@ -71,5 +71,5 @@ Intermediate/*
 # Cache files for the editor to use
 DerivedDataCache/*
 
-# Resharper C++ cash
+# Resharper C++ cache
 _ReSharper.Caches/
