@@ -7,19 +7,20 @@
 UCLASS()
 class COOPHORDESHOOTER_API ACSTrackerBot : public APawn
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
-	// Sets default values for this pawn's properties
-	ACSTrackerBot();
-
+    // Sets default values for this pawn's properties
+    ACSTrackerBot();
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+    // Called when the game starts or when spawned
+    virtual void BeginPlay() override;
 
     UPROPERTY(VisibleDefaultsOnly, Category="Components")
     UStaticMeshComponent* MeshComponent;
+
+    FVector GetNextPathPoint();
 public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+    // Called every frame
+    virtual void Tick(float DeltaTime) override;
 };
