@@ -18,8 +18,18 @@ protected:
 
     UPROPERTY(VisibleDefaultsOnly, Category="Components")
     UStaticMeshComponent* MeshComponent;
+    
+    UPROPERTY(EditDefaultsOnly, Category="AI Movement")
+    float MovementForce;
+
+    UPROPERTY(EditDefaultsOnly, Category="AI Movement")
+    float DistanceDelta;
+    
+    UPROPERTY(EditDefaultsOnly, Category="AI Movement")
+    bool bUseVelocityChange;
 
     FVector GetNextPathPoint();
+    FVector NextPathPoint;
 public:	
     // Called every frame
     virtual void Tick(float DeltaTime) override;
