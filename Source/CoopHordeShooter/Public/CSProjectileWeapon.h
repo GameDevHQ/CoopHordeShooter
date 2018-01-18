@@ -10,7 +10,7 @@ class COOPHORDESHOOTER_API ACSProjectileWeapon : public ACSWeapon
 {
     GENERATED_BODY()
 protected:
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Projectile weapon")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Projectile weapon")
     TSubclassOf<AActor> ProjectileClass;
 
     virtual void Fire() override;

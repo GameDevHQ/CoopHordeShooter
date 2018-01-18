@@ -20,19 +20,19 @@ public:
 protected:
     virtual void BeginPlay() override;
 
-    UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Projectile")
+    UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category="Projectile")
     float Damage;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Projectile")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Projectile")
     float DamageRadius;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Projectile")
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Projectile")
     UStaticMeshComponent* MeshComponent;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Movement")
     UProjectileMovementComponent* ProjectileMovementComponent;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "FX")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="FX")
     UParticleSystem* ExplosionEffect;
 private:
     FTimerHandle EffectTimerHandler;

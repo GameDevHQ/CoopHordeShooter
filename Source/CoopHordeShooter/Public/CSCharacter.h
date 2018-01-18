@@ -41,28 +41,28 @@ protected:
     void StartFire();
     void StopFire();
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
     UCameraComponent* CameraComponent;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
     USpringArmComponent* SpringArmComponent;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
     UCSHealthComponent* HealthComponent;
 
-    UPROPERTY(EditDefaultsOnly, Category = "Player")
+    UPROPERTY(EditDefaultsOnly, Category="Player")
     float ZoomedFOV;
 
-    UPROPERTY(EditDefaultsOnly, Category = "Player", meta = (ClampMin = 0.1, ClampMax = 100))
+    UPROPERTY(EditDefaultsOnly, Category="Player", meta = (ClampMin = 0.1, ClampMax = 100))
     float ZoomInterpolateSpeed;
 
-    UPROPERTY(EditDefaultsOnly, Category = "Player")
+    UPROPERTY(EditDefaultsOnly, Category="Player")
     TSubclassOf<ACSWeapon> DefaultWeaponClass;
 
-    UPROPERTY(EditDefaultsOnly, Category = "Player")
+    UPROPERTY(EditDefaultsOnly, Category="Player")
     FName WeaponAttackSocketName;
 
-    UPROPERTY(Replicated, BlueprintReadOnly, Category = "Player")
+    UPROPERTY(Replicated, BlueprintReadOnly, Category="Player")
     bool bDied;
 
     UFUNCTION()
