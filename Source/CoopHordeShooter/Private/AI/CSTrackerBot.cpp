@@ -9,10 +9,10 @@
 #include "CSHealthComponent.h"
 
 
-static int32 DebugAIMovement = 0;
-FAutoConsoleVariableRef CVARDebugAIMovement (
+static int32 DebugTrackerBotAI = 0;
+FAutoConsoleVariableRef CVARDebugTrackerBotAI (
     TEXT("COOP.DebugAIMovement"), 
-    DebugAIMovement, 
+    DebugTrackerBotAI, 
     TEXT("Draw debug components for AI path points"), 
     ECVF_Cheat
 );
@@ -22,7 +22,10 @@ FAutoConsoleVariableRef CVARDebugAIMovement (
 ACSTrackerBot::ACSTrackerBot():
 MovementForce(1000.0f),
 DistanceDelta(100.0f),
-bUseVelocityChange(true)
+bUseVelocityChange(true),
+ExplosionDamage(40.0f),
+ExplosionRadius(200.0f),
+bExploded(false)
 {
     // Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
     PrimaryActorTick.bCanEverTick = true;
@@ -47,7 +50,6 @@ void ACSTrackerBot::HandleTakeDamage(UCSHealthComponent* HealthComp, float Healt
                                     float HealthDelta, const UDamageType* DamageType, 
                                     AController* InstigatedBy, AActor* DamageCauser)
 {
-    // Explode when no health
     if (MaterialInstance == nullptr)
     {
         MaterialInstance = MeshComponent->CreateAndSetMaterialInstanceDynamicFromMaterial(0, MeshComponent->GetMaterial(0));   
@@ -57,6 +59,30 @@ void ACSTrackerBot::HandleTakeDamage(UCSHealthComponent* HealthComp, float Healt
     {
         MaterialInstance->SetScalarParameterValue("LastTimeDamageTaken", GetWorld()->TimeSeconds);
     }   
+
+    // Explode when no health
+    if (Health <= 0.0f)
+    {
+        SelfDestruct();
+    }
+}
+
+void ACSTrackerBot::SelfDestruct()
+{
+    if (bExploded)
+    {
+        return;
+    }
+
+    bExploded = true;
+    UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionEffect, GetActorLocation());
+
+    TArray<AActor*> IgnoredActors;
+    IgnoredActors.Add(this);
+    UGameplayStatics::ApplyRadialDamage(this, ExplosionDamage, GetActorLocation(), 
+                                        ExplosionRadius, nullptr, IgnoredActors, 
+                                        this, GetInstigatorController(), true);
+    Destroy();
 }
 
 FVector ACSTrackerBot::GetNextPathPoint()
@@ -85,7 +111,7 @@ void ACSTrackerBot::Tick(float DeltaTime)
     {
         NextPathPoint = GetNextPathPoint();
     
-        if (DebugAIMovement > 0)
+        if (DebugTrackerBotAI > 0)
         {
             DrawDebugString(GetWorld(), GetActorLocation(), "Target reached.");
         }
@@ -99,13 +125,13 @@ void ACSTrackerBot::Tick(float DeltaTime)
 
         MeshComponent->AddForce(ForceDirection, NAME_None, bUseVelocityChange);
 
-        if (DebugAIMovement > 0)
+        if (DebugTrackerBotAI > 0)
         {
             DrawDebugDirectionalArrow(GetWorld(), GetActorLocation(), GetActorLocation() + ForceDirection, 32, FColor::Yellow, false, 0.0f, 0, 1.0f);
         }
     }
 
-    if (DebugAIMovement > 0)
+    if (DebugTrackerBotAI > 0)
     {
         DrawDebugSphere(GetWorld(), NextPathPoint, 20.0f, 12, FColor::Yellow, false, 5.0f, 1);
     }
