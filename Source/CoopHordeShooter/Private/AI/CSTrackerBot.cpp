@@ -5,6 +5,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
+#include "Materials/MaterialInstanceDynamic.h"
 #include "CSHealthComponent.h"
 
 
@@ -21,7 +22,7 @@ FAutoConsoleVariableRef CVARDebugAIMovement (
 ACSTrackerBot::ACSTrackerBot():
 MovementForce(1000.0f),
 DistanceDelta(100.0f),
-bUseVelocityChange(false)
+bUseVelocityChange(true)
 {
     // Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
     PrimaryActorTick.bCanEverTick = true;
@@ -47,6 +48,15 @@ void ACSTrackerBot::HandleTakeDamage(UCSHealthComponent* HealthComp, float Healt
                                     AController* InstigatedBy, AActor* DamageCauser)
 {
     // Explode when no health
+    if (MaterialInstance == nullptr)
+    {
+        MaterialInstance = MeshComponent->CreateAndSetMaterialInstanceDynamicFromMaterial(0, MeshComponent->GetMaterial(0));   
+    }
+
+    if (MaterialInstance)
+    {
+        MaterialInstance->SetScalarParameterValue("LastTimeDamageTaken", GetWorld()->TimeSeconds);
+    }   
 }
 
 FVector ACSTrackerBot::GetNextPathPoint()

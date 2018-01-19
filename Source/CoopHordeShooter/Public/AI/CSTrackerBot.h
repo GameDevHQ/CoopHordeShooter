@@ -6,6 +6,7 @@
 
 
 class UCSHealthComponent;
+class UMaterialInstanceDynamic;
 
 UCLASS()
 class COOPHORDESHOOTER_API ACSTrackerBot : public APawn
@@ -41,6 +42,8 @@ protected:
 
     FVector GetNextPathPoint();
     FVector NextPathPoint;
+
+    UMaterialInstanceDynamic* MaterialInstance;
 public:	
     // Called every frame
     virtual void Tick(float DeltaTime) override;
