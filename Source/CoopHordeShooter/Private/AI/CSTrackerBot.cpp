@@ -5,6 +5,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
+#include "CSHealthComponent.h"
 
 
 static int32 DebugAIMovement = 0;
@@ -29,6 +30,9 @@ bUseVelocityChange(false)
     MeshComponent->SetCanEverAffectNavigation(false);
     MeshComponent->SetSimulatePhysics(true);
     RootComponent = MeshComponent;
+
+    HealthComponent = CreateDefaultSubobject<UCSHealthComponent>(TEXT("HealthComponent"));
+    HealthComponent->OnHealthChanged.AddDynamic(this, &ACSTrackerBot::HandleTakeDamage);
 }
 
 // Called when the game starts or when spawned
@@ -36,6 +40,13 @@ void ACSTrackerBot::BeginPlay()
 {
     Super::BeginPlay();
     NextPathPoint = GetNextPathPoint();
+}
+
+void ACSTrackerBot::HandleTakeDamage(UCSHealthComponent* HealthComp, float Health, 
+                                    float HealthDelta, const UDamageType* DamageType, 
+                                    AController* InstigatedBy, AActor* DamageCauser)
+{
+    // Explode when no health
 }
 
 FVector ACSTrackerBot::GetNextPathPoint()
