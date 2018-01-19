@@ -3,9 +3,11 @@
 #include "AI/Navigation/NavigationSystem.h"
 #include "AI/Navigation/NavigationPath.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/SphereComponent.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 #include "Materials/MaterialInstanceDynamic.h"
+#include "CSCharacter.h"
 #include "CSHealthComponent.h"
 
 
@@ -25,7 +27,8 @@ DistanceDelta(100.0f),
 bUseVelocityChange(true),
 ExplosionDamage(40.0f),
 ExplosionRadius(200.0f),
-bExploded(false)
+bExploded(false),
+bStartedSelfDestruction(false)
 {
     // Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
     PrimaryActorTick.bCanEverTick = true;
@@ -37,6 +40,13 @@ bExploded(false)
 
     HealthComponent = CreateDefaultSubobject<UCSHealthComponent>(TEXT("HealthComponent"));
     HealthComponent->OnHealthChanged.AddDynamic(this, &ACSTrackerBot::HandleTakeDamage);
+
+    SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
+    SphereComponent->SetSphereRadius(200.0f);
+    SphereComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+    SphereComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
+    SphereComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+    SphereComponent->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -98,6 +108,27 @@ FVector ACSTrackerBot::GetNextPathPoint()
 
     // Path to a player doesn't exist. Return the current actor location
     return GetActorLocation();
+}
+
+void ACSTrackerBot::NotifyActorBeginOverlap(AActor* OtherActor)
+{
+    Super::NotifyActorBeginOverlap(OtherActor);
+
+    if (!bStartedSelfDestruction)
+    {
+        // Overlapped with a player?
+        ACSCharacter* PlayerPawn = Cast<ACSCharacter>(OtherActor);
+        if (PlayerPawn)
+        {
+            GetWorldTimerManager().SetTimer(TimerHandle_SelfDamage, this, &ACSTrackerBot::DamageSelf, 0.5f, true, 0.0f);
+            bStartedSelfDestruction = true;
+        }
+    }
+}
+
+void ACSTrackerBot::DamageSelf()
+{
+    UGameplayStatics::ApplyDamage(this, 20.0f, GetInstigatorController(), this, nullptr);
 }
 
 // Called every frame

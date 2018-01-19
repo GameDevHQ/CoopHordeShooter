@@ -7,6 +7,7 @@
 
 class UCSHealthComponent;
 class UMaterialInstanceDynamic;
+class USphereComponent;
 
 UCLASS()
 class COOPHORDESHOOTER_API ACSTrackerBot : public APawn
@@ -25,6 +26,9 @@ protected:
     
     UPROPERTY(VisibleDefaultsOnly, Category="Components")
     UCSHealthComponent* HealthComponent;
+
+    UPROPERTY(VisibleDefaultsOnly, Category="Components")
+    USphereComponent* SphereComponent;
 
     UPROPERTY(EditDefaultsOnly, Category="FX")
     UParticleSystem* ExplosionEffect;
@@ -56,7 +60,11 @@ protected:
 
     UMaterialInstanceDynamic* MaterialInstance;
     bool bExploded;
+
+    bool bStartedSelfDestruction;
+    FTimerHandle TimerHandle_SelfDamage;
+    void DamageSelf();
 public:	
-    // Called every frame
     virtual void Tick(float DeltaTime) override;
+    virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 };
