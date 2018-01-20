@@ -52,6 +52,15 @@ protected:
     UPROPERTY(EditDefaultsOnly, Category="Gameplay")
     float SelfDamageInterval;
 
+    UPROPERTY(EditDefaultsOnly, Category="Gameplay", meta=(ClampMin=0))
+    int MaxPowerLevel;
+
+    UPROPERTY(EditDefaultsOnly, Category="Gameplay", meta=(ClampMin=0))
+    float NearbyAreaRadius;
+
+    UPROPERTY(EditDefaultsOnly, Category="Gameplay", meta=(ClampMin=0))
+    float CheckNearbyBotsInterval;
+
     UPROPERTY(EditDefaultsOnly, Category="Sound effects")
     USoundCue* SelfDestructSound;
 
@@ -64,16 +73,18 @@ protected:
                           class AController* InstigatedBy, AActor* DamageCauser);
 
     void SelfDestruct();
-
-    FVector GetNextPathPoint();
-    FVector NextPathPoint;
-
-    UMaterialInstanceDynamic* MaterialInstance;
-    bool bExploded;
-
-    bool bStartedSelfDestruction;
-    FTimerHandle TimerHandle_SelfDamage;
     void DamageSelf();
+    void CheckNearbyBots();
+    FVector GetNextPathPoint();
+
+    int PowerLevel;
+    bool bExploded;
+    bool bStartedSelfDestruction;
+
+    FVector NextPathPoint;
+    UMaterialInstanceDynamic* MaterialInstance;
+    FTimerHandle TimerHandle_SelfDamage;
+    FTimerHandle TimerHandle_CheckNearbyBots;
 public:	
     virtual void Tick(float DeltaTime) override;
     virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;

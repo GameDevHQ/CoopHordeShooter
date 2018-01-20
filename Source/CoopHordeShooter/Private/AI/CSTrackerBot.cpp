@@ -5,8 +5,8 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/Character.h"
-#include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
+#include "Kismet/GameplayStatics.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "CSCharacter.h"
 #include "CSHealthComponent.h"
@@ -30,7 +30,11 @@ ExplosionDamage(40.0f),
 ExplosionRadius(200.0f),
 SelfDamageInterval(0.5f),
 bExploded(false),
-bStartedSelfDestruction(false)
+bStartedSelfDestruction(false),
+NearbyAreaRadius(500.0f),
+CheckNearbyBotsInterval(1.0f),
+PowerLevel(0),
+MaxPowerLevel(3)
 {
     // Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
     PrimaryActorTick.bCanEverTick = true;
@@ -58,7 +62,8 @@ void ACSTrackerBot::BeginPlay()
 
     if (Role == ROLE_Authority)
     {
-        NextPathPoint = GetNextPathPoint();
+        NextPathPoint = GetNextPathPoint(); 
+        GetWorldTimerManager().SetTimer(TimerHandle_CheckNearbyBots, this, &ACSTrackerBot::CheckNearbyBots, CheckNearbyBotsInterval, true);
     }
 }
 
@@ -101,7 +106,9 @@ void ACSTrackerBot::SelfDestruct()
     {
         TArray<AActor*> IgnoredActors;
         IgnoredActors.Add(this);
-        UGameplayStatics::ApplyRadialDamage(this, ExplosionDamage, GetActorLocation(), 
+
+        float ActualDamage = ExplosionDamage + (ExplosionDamage * PowerLevel);
+        UGameplayStatics::ApplyRadialDamage(this, ActualDamage, GetActorLocation(), 
                                             ExplosionRadius, nullptr, IgnoredActors, 
                                             this, GetInstigatorController(), true);
 
@@ -148,6 +155,48 @@ void ACSTrackerBot::NotifyActorBeginOverlap(AActor* OtherActor)
 void ACSTrackerBot::DamageSelf()
 {
     UGameplayStatics::ApplyDamage(this, 20.0f, GetInstigatorController(), this, nullptr);
+}
+
+void ACSTrackerBot::CheckNearbyBots()
+{
+    // Get the nearest object to itself
+    TArray<FHitResult> OverlappedObjects;
+    FVector SearchNearbyStart = GetActorLocation();
+    FVector SearchNearbyEnd = SearchNearbyStart + FVector(0.0f, 0.0f, 0.1f);
+    FCollisionShape CollisionShape;
+    CollisionShape.SetSphere(NearbyAreaRadius);
+    GetWorld()->SweepMultiByChannel(OverlappedObjects, SearchNearbyStart, SearchNearbyEnd, FQuat::Identity, ECC_PhysicsBody, CollisionShape);
+
+    int NearbyBotsCount = 0;
+    for (FHitResult OverlapResult: OverlappedObjects)
+    {
+        // Taking into account only other Tracker Bot AI objects
+        ACSTrackerBot* OtherTrackerBot = Cast<ACSTrackerBot>(OverlapResult.GetActor());
+        if (OtherTrackerBot && OtherTrackerBot != this)
+        {
+            NearbyBotsCount++;  
+        }
+    }
+
+    PowerLevel = FMath::Clamp(NearbyBotsCount, 0, MaxPowerLevel);
+
+    if (MaterialInstance == nullptr)
+    {
+        MaterialInstance = MeshComponent->CreateAndSetMaterialInstanceDynamicFromMaterial(0, MeshComponent->GetMaterial(0));   
+    }
+
+    // Update a material so that the pulse will depends from current PowerLevel value
+    if (MaterialInstance)
+    {
+        float Alpha = PowerLevel / static_cast<float>(MaxPowerLevel);
+        MaterialInstance->SetScalarParameterValue("PowerLevelAlpha", Alpha);
+    } 
+
+    if (DebugTrackerBotAI)
+    {
+        DrawDebugSphere(GetWorld(), GetActorLocation(), NearbyAreaRadius, 12, FColor::White, false, 1.0f);
+        DrawDebugString(GetWorld(), FVector(0, 0, 0), FString::FromInt(NearbyBotsCount), this, FColor::White, 1.0f, true);
+    }
 }
 
 // Called every frame
