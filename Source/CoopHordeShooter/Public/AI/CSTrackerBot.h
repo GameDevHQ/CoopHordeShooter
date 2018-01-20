@@ -8,6 +8,7 @@
 class UCSHealthComponent;
 class UMaterialInstanceDynamic;
 class USphereComponent;
+class USoundCue;
 
 UCLASS()
 class COOPHORDESHOOTER_API ACSTrackerBot : public APawn
@@ -47,6 +48,15 @@ protected:
 
     UPROPERTY(EditDefaultsOnly, Category="Gameplay")
     float ExplosionRadius;
+
+    UPROPERTY(EditDefaultsOnly, Category="Gameplay")
+    float SelfDamageInterval;
+
+    UPROPERTY(EditDefaultsOnly, Category="Sound effects")
+    USoundCue* SelfDestructSound;
+
+    UPROPERTY(EditDefaultsOnly, Category="Sound effects")
+    USoundCue* ExplodeSound;
 
     UFUNCTION()
     void HandleTakeDamage(UCSHealthComponent* HealthComp, float Health,

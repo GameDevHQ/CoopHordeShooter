@@ -6,6 +6,7 @@
 #include "Components/SphereComponent.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "CSCharacter.h"
 #include "CSHealthComponent.h"
@@ -27,6 +28,7 @@ DistanceDelta(100.0f),
 bUseVelocityChange(true),
 ExplosionDamage(40.0f),
 ExplosionRadius(200.0f),
+SelfDamageInterval(0.5f),
 bExploded(false),
 bStartedSelfDestruction(false)
 {
@@ -92,6 +94,8 @@ void ACSTrackerBot::SelfDestruct()
     UGameplayStatics::ApplyRadialDamage(this, ExplosionDamage, GetActorLocation(), 
                                         ExplosionRadius, nullptr, IgnoredActors, 
                                         this, GetInstigatorController(), true);
+    UGameplayStatics::PlaySoundAtLocation(this, ExplodeSound, GetActorLocation());
+
     Destroy();
 }
 
@@ -120,8 +124,10 @@ void ACSTrackerBot::NotifyActorBeginOverlap(AActor* OtherActor)
         ACSCharacter* PlayerPawn = Cast<ACSCharacter>(OtherActor);
         if (PlayerPawn)
         {
-            GetWorldTimerManager().SetTimer(TimerHandle_SelfDamage, this, &ACSTrackerBot::DamageSelf, 0.5f, true, 0.0f);
             bStartedSelfDestruction = true;
+
+            GetWorldTimerManager().SetTimer(TimerHandle_SelfDamage, this, &ACSTrackerBot::DamageSelf, SelfDamageInterval, true, 0.0f);
+            UGameplayStatics::SpawnSoundAttached(SelfDestructSound, RootComponent);
         }
     }
 }
