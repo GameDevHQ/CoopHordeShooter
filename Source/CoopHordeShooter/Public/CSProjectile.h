@@ -20,7 +20,7 @@ public:
 protected:
     virtual void BeginPlay() override;
 
-    UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category="Projectile")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Projectile")
     float Damage;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Projectile")

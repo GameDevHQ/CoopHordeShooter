@@ -75,13 +75,13 @@ protected:
     UPROPERTY(EditDefaultsOnly, Category="Weapon")
     float CriticalHitDamageMultiplier;
 
-    UPROPERTY(EditDefaultsOnly, Category="Weapon", meta = (ClampMin = 1, ClampMax = 1000))
+    UPROPERTY(EditDefaultsOnly, Category="Weapon", meta=(ClampMin=1, ClampMax=1000))
     float FireRate;
 
-    UPROPERTY(EditDefaultsOnly, Category="Weapon", meta = (ClampMin = 1, ClampMax = 1000))
+    UPROPERTY(EditDefaultsOnly, Category="Weapon", meta=(ClampMin=1, ClampMax=1000))
     float ScatterOfBulletsMultiplier;
 
-    UPROPERTY(EditDefaultsOnly, Category="Weapon", meta = (ClampMin = 0))
+    UPROPERTY(EditDefaultsOnly, Category="Weapon", meta=(ClampMin=0))
     float SpreadAmount;
 
     FTimerHandle TimerHandle_TimeBetweenShots;
