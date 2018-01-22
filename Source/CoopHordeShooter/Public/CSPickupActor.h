@@ -7,6 +7,7 @@
 
 class USphereComponent;
 class UDecalComponent;
+class ACSPowerupActor;
 
 UCLASS()
 class COOPHORDESHOOTER_API ACSPickupActor : public AActor
@@ -25,6 +26,17 @@ protected:
 
     UPROPERTY(VisibleAnywhere, Category="Components")
     UDecalComponent* DecalComponent;
+
+    UPROPERTY(EditDefaultsOnly, Category="PickupActor")
+    TSubclassOf<ACSPowerupActor> PowerUpClass;
+
+    UPROPERTY(EditDefaultsOnly, Category="Gameplay")
+    float RespawnTime;
+
+    void Respawn();
+
+    ACSPowerupActor* PowerUpInstance;
+    FTimerHandle TimerHandle_RespawnPowerUp;
 public:
     virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 };
