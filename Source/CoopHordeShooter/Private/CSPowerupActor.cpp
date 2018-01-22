@@ -29,9 +29,11 @@ void ACSPowerupActor::OnTickPowerup()
 
 void ACSPowerupActor::ActivatePowerup()
 {
+    OnActivated();
+
     if (PowerupInteval > 0.0f)
     {
-        GetWorldTimerManager().SetTimer(TimerHandle_PowerupTick, this, &ACSPowerupActor::OnTickPowerup, PowerupInteval, true, 0.0f);
+        GetWorldTimerManager().SetTimer(TimerHandle_PowerupTick, this, &ACSPowerupActor::OnTickPowerup, PowerupInteval, true);
     }
     else
     {

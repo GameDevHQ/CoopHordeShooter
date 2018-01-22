@@ -4,6 +4,8 @@
 #include "TimerManager.h"
 #include "Engine/World.h"
 #include "CSPowerupActor.h"
+#include "CSCharacter.h"
+
 
 // Sets default values
 ACSPickupActor::ACSPickupActor():
@@ -44,7 +46,8 @@ void ACSPickupActor::NotifyActorBeginOverlap(AActor* OtherActor)
 {
     Super::NotifyActorBeginOverlap(OtherActor);
 
-    if (PowerUpInstance)
+    ACSCharacter* Player = Cast<ACSCharacter>(OtherActor);
+    if (PowerUpInstance && Player)
     {
         PowerUpInstance->ActivatePowerup();
         PowerUpInstance = nullptr;
