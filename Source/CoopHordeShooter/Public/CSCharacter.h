@@ -22,7 +22,7 @@ protected:
     float DefaultFOV;
     bool bWantsToZoom;
 
-    UPROPERTY(Replicated)
+    UPROPERTY(Replicated, BlueprintReadOnly)
     ACSWeapon* CurrentWeapon;
 
     // Called when the game starts or when spawned
