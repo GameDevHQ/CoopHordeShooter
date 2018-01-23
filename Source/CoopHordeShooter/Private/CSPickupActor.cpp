@@ -19,13 +19,19 @@ RespawnTime(10.0f)
     DecalComponent->DecalSize = FVector(64.0f, 75.0f, 75.0f);
     DecalComponent->SetRelativeRotation(FRotator(90.0f, 0.0f, 0.0f));
     DecalComponent->SetupAttachment(RootComponent);
+
+    SetReplicates(true);
 }
 
 // Called when the game starts or when spawned
 void ACSPickupActor::BeginPlay()
 {
     Super::BeginPlay();
-    Respawn();
+
+    if (Role == ROLE_Authority)
+    {
+        Respawn();   
+    }
 }
 
 void ACSPickupActor::Respawn()
@@ -47,7 +53,7 @@ void ACSPickupActor::NotifyActorBeginOverlap(AActor* OtherActor)
     Super::NotifyActorBeginOverlap(OtherActor);
 
     ACSCharacter* Player = Cast<ACSCharacter>(OtherActor);
-    if (PowerUpInstance && Player)
+    if (Role == ROLE_Authority && PowerUpInstance && Player)
     {
         PowerUpInstance->ActivatePowerup();
         PowerUpInstance = nullptr;

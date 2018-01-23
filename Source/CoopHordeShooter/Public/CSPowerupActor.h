@@ -14,9 +14,6 @@ public:
     // Sets default values for this actor's properties
     ACSPowerupActor();
 protected:
-    // Called when the game starts or when spawned
-    virtual void BeginPlay() override;
-
     // Time between powerup ticks
     UPROPERTY(EditDefaultsOnly, Category="Powerups")
     float PowerupInteval;
@@ -27,6 +24,15 @@ protected:
 
     UFUNCTION()
     void OnTickPowerup();
+
+    UPROPERTY(ReplicatedUsing=OnRep_PowerupActive)
+    bool bIsActivated;
+
+    UFUNCTION()
+    void OnRep_PowerupActive();
+
+    UFUNCTION(BlueprintImplementableEvent, Category="Powerups")
+    void OnPowerupStateChanged(bool bNewIsActive);
 
     int32 TicksProcessed;
     FTimerHandle TimerHandle_PowerupTick;

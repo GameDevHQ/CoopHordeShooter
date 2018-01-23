@@ -30,7 +30,7 @@ protected:
     UPROPERTY(EditInstanceOnly, Category="PickupActor")
     TSubclassOf<ACSPowerupActor> PowerUpClass;
 
-    UPROPERTY(EditDefaultsOnly, Category="Gameplay")
+    UPROPERTY(EditInstanceOnly, Category="Gameplay")
     float RespawnTime;
 
     void Respawn();
