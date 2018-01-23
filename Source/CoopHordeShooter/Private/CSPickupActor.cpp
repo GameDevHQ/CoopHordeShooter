@@ -55,7 +55,7 @@ void ACSPickupActor::NotifyActorBeginOverlap(AActor* OtherActor)
     ACSCharacter* Player = Cast<ACSCharacter>(OtherActor);
     if (Role == ROLE_Authority && PowerUpInstance && Player)
     {
-        PowerUpInstance->ActivatePowerup();
+        PowerUpInstance->ActivatePowerup(OtherActor);
         PowerUpInstance = nullptr;
 
         GetWorldTimerManager().SetTimer(TimerHandle_RespawnPowerUp, this, &ACSPickupActor::Respawn, RespawnTime, false);
