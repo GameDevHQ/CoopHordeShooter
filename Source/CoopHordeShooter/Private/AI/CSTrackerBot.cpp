@@ -122,7 +122,7 @@ FVector ACSTrackerBot::GetNextPathPoint()
 
     // Try to build a path to a player and return the first available from collection
     UNavigationPath* NavigationPath = UNavigationSystem::FindPathToActorSynchronously(this, GetActorLocation(), PlayerPawn); 
-    if (NavigationPath->PathPoints.Num() > 1)
+    if (NavigationPath && NavigationPath->PathPoints.Num() > 1)
     {
         return NavigationPath->PathPoints[1];
     }
