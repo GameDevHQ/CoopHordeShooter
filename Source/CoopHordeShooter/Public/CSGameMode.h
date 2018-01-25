@@ -4,6 +4,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "CSGameMode.generated.h"
 
+enum class EWaveState: uint8;
 
 UCLASS()
 class COOPHORDESHOOTER_API ACSGameMode : public AGameModeBase
@@ -27,6 +28,7 @@ protected:
     
     void CheckAnyPlayerIsAlive();
     void GameOver();
+    void SetWaveState(EWaveState NewState);
 
     int BotsToSpawn;
     int WaveCount; 

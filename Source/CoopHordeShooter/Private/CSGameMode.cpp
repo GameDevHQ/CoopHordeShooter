@@ -2,6 +2,7 @@
 #include "TimerManager.h"
 #include "Engine/World.h"
 #include "CSHealthComponent.h"
+#include "CSGameState.h"
 
 
 ACSGameMode::ACSGameMode():
@@ -9,6 +10,8 @@ BotsToSpawn(0),
 WaveCount(0),
 TimeBetweenWaves(10.0f)
 {
+    GameStateClass = ACSGameState::StaticClass();
+
     PrimaryActorTick.bCanEverTick = true;
     PrimaryActorTick.TickInterval = 1.0f;
 }
@@ -97,6 +100,15 @@ void ACSGameMode::GameOver()
 {
     EndWave();
     UE_LOG(LogTemp, Log, TEXT("Game over!. All players are died."));
+}
+
+void ACSGameMode::SetWaveState(EWaveState NewState)
+{
+    ACSGameState* GameState = GetGameState<ACSGameState>();
+    if (ensureAlways(GameState))
+    {
+        GameState->WaveState = NewState;
+    }
 }
 
 void ACSGameMode::StartPlay()
