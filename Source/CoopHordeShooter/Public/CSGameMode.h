@@ -21,6 +21,7 @@ protected:
 
     void StartWave();
     void EndWave();
+    void CheckWaveState();
     void PrepareForNextWave();
     void SpawnBotTimerElapsed();
 
@@ -30,4 +31,5 @@ protected:
     FTimerHandle TimerHandle_NextWaveStart;
 public:
     virtual void StartPlay() override;
+    virtual void Tick(float DeltaSeconds) override;
 };

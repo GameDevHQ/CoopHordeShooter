@@ -59,6 +59,11 @@ void UCSHealthComponent::Heal(float HealAmount)
     UE_LOG(LogTemp, Log, TEXT("Health changed: %s (+%s)"), *FString::SanitizeFloat(Health), *FString::SanitizeFloat(HealAmount));
 }
 
+float UCSHealthComponent::GetHealth() const
+{
+    return Health;
+}
+
 void UCSHealthComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
