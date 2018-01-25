@@ -24,6 +24,9 @@ protected:
     void CheckWaveState();
     void PrepareForNextWave();
     void SpawnBotTimerElapsed();
+    
+    void CheckAnyPlayerIsAlive();
+    void GameOver();
 
     int BotsToSpawn;
     int WaveCount; 

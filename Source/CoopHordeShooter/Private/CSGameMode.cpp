@@ -72,6 +72,33 @@ void ACSGameMode::SpawnBotTimerElapsed()
     }
 }
 
+void ACSGameMode::CheckAnyPlayerIsAlive()
+{
+    for(FConstPlayerControllerIterator It=GetWorld()->GetPlayerControllerIterator(); It; ++It)
+    {
+        APlayerController* PlayerController = It->Get();
+        if (PlayerController && PlayerController->GetPawn())
+        {
+            APawn* Pawn = PlayerController->GetPawn();
+            UCSHealthComponent* HealthComponent = Cast<UCSHealthComponent>(Pawn->GetComponentByClass(UCSHealthComponent::StaticClass()));
+            if (ensure(HealthComponent) && HealthComponent->GetHealth() > 0.0f)
+            {
+                // A player is still alive.
+                return;
+            }
+        }
+    }
+
+    // No players alive
+    GameOver();
+}
+
+void ACSGameMode::GameOver()
+{
+    EndWave();
+    UE_LOG(LogTemp, Log, TEXT("Game over!. All players are died."));
+}
+
 void ACSGameMode::StartPlay()
 {
     Super::StartPlay();
@@ -82,4 +109,5 @@ void ACSGameMode::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
     CheckWaveState();
+    CheckAnyPlayerIsAlive();
 }
