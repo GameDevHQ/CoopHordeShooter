@@ -21,11 +21,21 @@ void ACSGameMode::StartWave()
     WaveCount++;
     BotsToSpawn = 2 * WaveCount;
     GetWorldTimerManager().SetTimer(TimerHandle_BotSpawner, this, &ACSGameMode::SpawnBotTimerElapsed, 1.0f, true, 0.0f);
+
+    SetWaveState(EWaveState::WaveInProgress);
 }
 
 void ACSGameMode::EndWave()
 {
     GetWorldTimerManager().ClearTimer(TimerHandle_BotSpawner);
+
+    SetWaveState(EWaveState::WaitingToComplete);
+}
+
+void ACSGameMode::PrepareForNextWave()
+{
+    GetWorldTimerManager().SetTimer(TimerHandle_NextWaveStart, this, &ACSGameMode::StartWave, TimeBetweenWaves, false);
+    SetWaveState(EWaveState::WaitingToStart);
 }
 
 void ACSGameMode::CheckWaveState()
@@ -55,13 +65,9 @@ void ACSGameMode::CheckWaveState()
 
     if (bWaveIsPassed)
     {
+        SetWaveState(EWaveState::WaveComplete);
         PrepareForNextWave();
     }
-}
-
-void ACSGameMode::PrepareForNextWave()
-{
-    GetWorldTimerManager().SetTimer(TimerHandle_NextWaveStart, this, &ACSGameMode::StartWave, TimeBetweenWaves, false);
 }
 
 void ACSGameMode::SpawnBotTimerElapsed()
@@ -99,6 +105,8 @@ void ACSGameMode::CheckAnyPlayerIsAlive()
 void ACSGameMode::GameOver()
 {
     EndWave();
+
+    SetWaveState(EWaveState::GameOver);
     UE_LOG(LogTemp, Log, TEXT("Game over!. All players are died."));
 }
 
@@ -107,7 +115,7 @@ void ACSGameMode::SetWaveState(EWaveState NewState)
     ACSGameState* GameState = GetGameState<ACSGameState>();
     if (ensureAlways(GameState))
     {
-        GameState->WaveState = NewState;
+        GameState->SetWaveState(NewState);
     }
 }
 
