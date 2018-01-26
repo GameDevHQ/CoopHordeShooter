@@ -32,6 +32,8 @@ protected:
 
     UFUNCTION()
     void OnRep_Health(float OldHealth);
+
+    bool bIsDead;
 public:
     UPROPERTY(BlueprintAssignable, Category="Events")
     FOnHealthChangedSignature OnHealthChanged;

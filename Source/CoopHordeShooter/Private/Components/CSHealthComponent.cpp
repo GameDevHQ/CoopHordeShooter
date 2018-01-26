@@ -1,10 +1,12 @@
 #include "CSHealthComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "CSGameMode.h"
 
 
 // Sets default values for this component's properties
 UCSHealthComponent::UCSHealthComponent():
-DefaultHealth(100.f)
+DefaultHealth(100.f),
+bIsDead(false)
 {
     SetIsReplicated(true);
 }
@@ -38,6 +40,16 @@ void UCSHealthComponent::HandleTakeAnyDamage(AActor* DamagedActor, float Damage,
     OnHealthChanged.Broadcast(this, Health, Damage, DamageType, InstigatedBy, DamageCauser);
 
     UE_LOG(LogTemp, Log, TEXT("Health changed: %s"), *FString::SanitizeFloat(Health));
+
+    bIsDead = Health <= 0.0f;
+    if (bIsDead)
+    {
+        ACSGameMode* GameMode = Cast<ACSGameMode>(GetWorld()->GetAuthGameMode());
+        if (GameMode)
+        {
+            GameMode->OnActorKilled.Broadcast(GetOwner(), DamageCauser, InstigatedBy);   
+        }
+    }
 }
 
 void UCSHealthComponent::OnRep_Health(float OldHealth)

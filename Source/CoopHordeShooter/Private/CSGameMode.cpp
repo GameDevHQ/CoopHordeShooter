@@ -3,6 +3,7 @@
 #include "Engine/World.h"
 #include "CSHealthComponent.h"
 #include "CSGameState.h"
+#include "CSPlayerState.h"
 
 
 ACSGameMode::ACSGameMode():
@@ -11,6 +12,7 @@ WaveCount(0),
 TimeBetweenWaves(10.0f)
 {
     GameStateClass = ACSGameState::StaticClass();
+    PlayerStateClass = ACSPlayerState::StaticClass();
 
     PrimaryActorTick.bCanEverTick = true;
     PrimaryActorTick.TickInterval = 1.0f;
