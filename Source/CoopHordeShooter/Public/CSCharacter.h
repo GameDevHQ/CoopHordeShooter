@@ -38,9 +38,6 @@ protected:
     void BeginZoom();
     void EndZoom();
 
-    void StartFire();
-    void StopFire();
-
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
     UCameraComponent* CameraComponent;
 
@@ -70,11 +67,13 @@ protected:
                         float HealthDelta, const class UDamageType* DamageType, 
                         class AController* InstigatedBy, AActor* DamageCauser);
 public:	
-    // Called every frame
     virtual void Tick(float DeltaTime) override;
-
-    // Called to bind functionality to input
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
     virtual FVector GetPawnViewLocation() const override;
+
+    UFUNCTION(BlueprintCallable, Category="Player")
+    void StartFire();
+
+    UFUNCTION(BlueprintCallable, Category="Player")
+    void StopFire();
 };
