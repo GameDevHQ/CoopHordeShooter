@@ -104,7 +104,7 @@ void ACSWeapon::Fire()
                 ActualDamage *= CriticalHitDamageMultiplier;
             }
 
-            UGameplayStatics::ApplyPointDamage(HitActor, ActualDamage, ShotDirection, HitResult, Owner->GetInstigatorController(), this, DamageType);
+            UGameplayStatics::ApplyPointDamage(HitActor, ActualDamage, ShotDirection, HitResult, Owner->GetInstigatorController(), Owner, DamageType);
 
             PlayImpactEffects(SurfaceType, HitResult.ImpactPoint);
             TracerEndPoint = HitResult.ImpactPoint;

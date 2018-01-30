@@ -41,5 +41,11 @@ public:
     UFUNCTION(BlueprintCallable, Category="HealthComponent")
     void Heal(float HealAmount);
 
+    UPROPERTY(Replicated, EditDefaultsOnly, BlueprintReadOnly, Category="HealthComponent")
+    uint8 TeamNumber;
+
+    UFUNCTION(BlueprintCallable, BlueprintPure, Category="HealthComponent")
+    static bool IsFriendly(AActor* ActorA, AActor* ActorB);
+
     float GetHealth() const;
 };

@@ -6,7 +6,8 @@
 // Sets default values for this component's properties
 UCSHealthComponent::UCSHealthComponent():
 DefaultHealth(100.f),
-bIsDead(false)
+bIsDead(false),
+TeamNumber(255)
 {
     SetIsReplicated(true);
 }
@@ -32,6 +33,11 @@ void UCSHealthComponent::HandleTakeAnyDamage(AActor* DamagedActor, float Damage,
                                              AController* InstigatedBy, AActor* DamageCauser)
 {
     if (Damage <= 0.0f)
+    {
+        return;
+    }
+
+    if (DamageCauser != DamagedActor && IsFriendly(GetOwner(), DamageCauser))
     {
         return;
     }
@@ -69,6 +75,25 @@ void UCSHealthComponent::Heal(float HealAmount)
     OnHealthChanged.Broadcast(this, Health, -HealAmount, nullptr, nullptr, nullptr);
 
     UE_LOG(LogTemp, Log, TEXT("Health changed: %s (+%s)"), *FString::SanitizeFloat(Health), *FString::SanitizeFloat(HealAmount));
+}
+
+bool UCSHealthComponent::IsFriendly(AActor * ActorA, AActor * ActorB)
+{
+    if (ActorA == nullptr || ActorB == nullptr)
+    {
+        return false;
+    }
+
+    UCSHealthComponent* HealthComponentA = Cast<UCSHealthComponent>(ActorA->GetComponentByClass(UCSHealthComponent::StaticClass()));
+    UCSHealthComponent* HealthComponentB = Cast<UCSHealthComponent>(ActorB->GetComponentByClass(UCSHealthComponent::StaticClass()));
+
+    // Assume that they're friendly
+    if (HealthComponentA == nullptr || HealthComponentB == nullptr)
+    {
+        return true;
+    }
+
+    return HealthComponentA->TeamNumber == HealthComponentB->TeamNumber;
 }
 
 float UCSHealthComponent::GetHealth() const
