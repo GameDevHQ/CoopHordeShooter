@@ -76,6 +76,7 @@ protected:
     void DamageSelf();
     void CheckNearbyBots();
     FVector GetNextPathPoint();
+    void RefreshPath();
 
     int PowerLevel;
     bool bExploded;
@@ -85,6 +86,7 @@ protected:
     UMaterialInstanceDynamic* MaterialInstance;
     FTimerHandle TimerHandle_SelfDamage;
     FTimerHandle TimerHandle_CheckNearbyBots;
+    FTimerHandle TimerHandle_UpdatePath;
 public:	
     virtual void Tick(float DeltaTime) override;
     virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;

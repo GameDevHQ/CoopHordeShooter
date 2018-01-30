@@ -26,8 +26,8 @@ ACSTrackerBot::ACSTrackerBot():
 MovementForce(1000.0f),
 DistanceDelta(100.0f),
 bUseVelocityChange(true),
-ExplosionDamage(40.0f),
-ExplosionRadius(200.0f),
+ExplosionDamage(60.0f),
+ExplosionRadius(300.0f),
 SelfDamageInterval(0.5f),
 bExploded(false),
 bStartedSelfDestruction(false),
@@ -118,17 +118,49 @@ void ACSTrackerBot::SelfDestruct()
 
 FVector ACSTrackerBot::GetNextPathPoint()
 {
-    ACharacter* PlayerPawn = UGameplayStatics::GetPlayerCharacter(this, 0);
-
-    // Try to build a path to a player and return the first available from collection
-    UNavigationPath* NavigationPath = UNavigationSystem::FindPathToActorSynchronously(this, GetActorLocation(), PlayerPawn); 
-    if (NavigationPath && NavigationPath->PathPoints.Num() > 1)
+    AActor* NearestTarget = nullptr;
+    float NearestTargetDistance = FLT_MAX;
+    for (FConstPawnIterator It=GetWorld()->GetPawnIterator(); It ; ++It)
     {
-        return NavigationPath->PathPoints[1];
+        APawn* TestPawn = It->Get();
+        if (TestPawn == nullptr || UCSHealthComponent::IsFriendly(TestPawn, this))
+        {
+            continue;
+        }
+
+        UCSHealthComponent* TestPawnHealthComponent = Cast<UCSHealthComponent>(TestPawn->GetComponentByClass(UCSHealthComponent::StaticClass()));
+        if (TestPawnHealthComponent && TestPawnHealthComponent->GetHealth() >= 0.0f)
+        {
+            float Distance = (TestPawn->GetActorLocation() - GetActorLocation()).Size();
+            if (Distance < NearestTargetDistance)
+            {
+                NearestTarget = TestPawn;
+                NearestTargetDistance = Distance;
+            }
+        }
+    }
+
+    if (NearestTarget)
+    {
+        // Try to build a path to a player and return the first available from collection
+        UNavigationPath* NavigationPath = UNavigationSystem::FindPathToActorSynchronously(this, GetActorLocation(), NearestTarget); 
+
+        GetWorldTimerManager().ClearTimer(TimerHandle_UpdatePath);
+        GetWorldTimerManager().SetTimer(TimerHandle_UpdatePath, this, &ACSTrackerBot::RefreshPath, 5.0f, false);
+
+        if (NavigationPath && NavigationPath->PathPoints.Num() > 1)
+        {
+            return NavigationPath->PathPoints[1];
+        }   
     }
 
     // Path to a player doesn't exist. Return the current actor location
     return GetActorLocation();
+}
+
+void ACSTrackerBot::RefreshPath()
+{
+    NextPathPoint = GetNextPathPoint();
 }
 
 void ACSTrackerBot::NotifyActorBeginOverlap(AActor* OtherActor)
@@ -139,7 +171,7 @@ void ACSTrackerBot::NotifyActorBeginOverlap(AActor* OtherActor)
     {
         // Overlapped with a player?
         ACSCharacter* PlayerPawn = Cast<ACSCharacter>(OtherActor);
-        if (PlayerPawn)
+        if (PlayerPawn && !UCSHealthComponent::IsFriendly(OtherActor, this))
         {
             bStartedSelfDestruction = true;
             UGameplayStatics::SpawnSoundAttached(SelfDestructSound, RootComponent);
