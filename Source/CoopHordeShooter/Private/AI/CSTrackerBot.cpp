@@ -100,6 +100,7 @@ void ACSTrackerBot::SelfDestruct()
     UGameplayStatics::PlaySoundAtLocation(this, ExplodeSound, GetActorLocation());
 
     MeshComponent->SetVisibility(false, true);
+    MeshComponent->SetSimulatePhysics(false);
     MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
     if (Role == ROLE_Authority)
